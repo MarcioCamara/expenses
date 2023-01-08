@@ -5,6 +5,8 @@ import { DEFAULT_CURRENCY_CODE, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { IconDefinition } from '@ant-design/icons-angular';
+import { EyeOutline, EditOutline, SaveOutline, DeleteOutline } from '@ant-design/icons-angular/icons';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
@@ -24,9 +26,12 @@ import { RegisterComponent } from './pages/register/register.component';
 
 registerLocaleData(pt);
 
-// const icons: IconDefinition[] = [
-//   EyeOutline,
-// ];
+const icons: IconDefinition[] = [
+  EyeOutline,
+  EditOutline,
+  SaveOutline,
+  DeleteOutline,
+];
 
 @NgModule({
   declarations: [
@@ -45,7 +50,7 @@ registerLocaleData(pt);
     NzButtonModule,
     NzDatePickerModule,
     NzFormModule,
-    // NzIconModule.forRoot(icons),
+    NzIconModule.forRoot(icons),
     NzInputModule,
     NzLayoutModule,
     NzMenuModule,
