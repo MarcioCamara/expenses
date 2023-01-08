@@ -26,7 +26,8 @@
     <div nz-col [nzSpan]="7">
       <nz-form-item>
         <nz-form-control nzErrorTip="Por favor insira o valor da despesa!">
-          <input type="text" nz-input formControlName="value" placeholder="R$ 0,00" />
+          <input nz-input formControlName="value" placeholder="R$ 0,00" mask="separator.2" thousandSeparator="."
+            decimalMarker="," type="text" [dropSpecialCharacters]="true" />
         </nz-form-control>
       </nz-form-item>
     </div>
@@ -109,18 +110,37 @@
           <span *ngIf="!expense.isBeingEdited">
             {{ expense.value | currency:'BRL' }}
           </span>
+
+          <input *ngIf="expense.isBeingEdited" nz-input [(ngModel)]="expense.value" placeholder="R$ 0,00"
+            mask="separator.2" thousandSeparator="." decimalMarker="," type="text" [dropSpecialCharacters]="true" />
         </td>
 
         <td>
           <span *ngIf="!expense.isBeingEdited">
             {{ expense.paymentSource }}
           </span>
+
+          <nz-select *ngIf="expense.isBeingEdited" [(ngModel)]="expense.paymentSource" nzShowSearch nzAllowClear
+            nzPlaceHolder="Selecione uma fonte">
+            <nz-option nzLabel="Sal. Marcio" nzValue="Sal. Marcio"></nz-option>
+            <nz-option nzLabel="Pensão Wanda" nzValue="Pensão Wanda"></nz-option>
+            <nz-option nzLabel="Créd. Santander" nzValue="Créd. Santander"></nz-option>
+            <nz-option nzLabel="Créd. Nubank" nzValue="Créd. Nubank"></nz-option>
+          </nz-select>
         </td>
 
         <td>
           <span *ngIf="!expense.isBeingEdited">
             {{ expense.status }}
           </span>
+
+          <nz-select *ngIf="expense.isBeingEdited" [(ngModel)]="expense.status" nzShowSearch nzAllowClear
+            nzPlaceHolder="Selecione um status">
+            <nz-option nzLabel="Pago" nzValue="Pago"></nz-option>
+            <nz-option nzLabel="Pendente" nzValue="Pendente"></nz-option>
+            <nz-option nzLabel="Separado" nzValue="Separado"></nz-option>
+            <nz-option nzLabel="Cancelado" nzValue="Cancelado"></nz-option>
+          </nz-select>
         </td>
 
         <td nzAlign="center">

@@ -6,7 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IconDefinition } from '@ant-design/icons-angular';
-import { EyeOutline, EditOutline, SaveOutline, DeleteOutline } from '@ant-design/icons-angular/icons';
+import { DeleteOutline, EditOutline, EyeOutline, SaveOutline } from '@ant-design/icons-angular/icons';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
@@ -19,6 +19,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { NzTableModule } from 'ng-zorro-antd/table';
+import { NgxMaskDirective, NgxMaskPipe, provideEnvironmentNgxMask, provideNgxMask } from 'ngx-mask';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './pages/home/home.component';
@@ -27,10 +28,10 @@ import { RegisterComponent } from './pages/register/register.component';
 registerLocaleData(pt);
 
 const icons: IconDefinition[] = [
-  EyeOutline,
-  EditOutline,
-  SaveOutline,
   DeleteOutline,
+  EditOutline,
+  EyeOutline,
+  SaveOutline,
 ];
 
 @NgModule({
@@ -57,8 +58,11 @@ const icons: IconDefinition[] = [
     NzSelectModule,
     NzSpaceModule,
     NzTableModule,
+    NgxMaskDirective,
+    NgxMaskPipe,
   ],
   providers: [
+    provideNgxMask(),
     {
       provide: NZ_I18N, useValue: pt_BR
     },
