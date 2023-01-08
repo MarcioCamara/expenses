@@ -97,13 +97,31 @@
             [(ngModel)]="expense.month"></nz-date-picker>
         </td>
 
-        <td nzEllipsis="true">{{ expense.name }}</td>
+        <td nzEllipsis="true">
+          <span *ngIf="!expense.isBeingEdited">
+            {{ expense.name }}
+          </span>
 
-        <td>{{ expense.value | currency:'BRL' }}</td>
+          <input *ngIf="expense.isBeingEdited" type="text" nz-input [(ngModel)]="expense.name" placeholder="Nome" />
+        </td>
 
-        <td>{{ expense.paymentSource }}</td>
+        <td>
+          <span *ngIf="!expense.isBeingEdited">
+            {{ expense.value | currency:'BRL' }}
+          </span>
+        </td>
 
-        <td>{{ expense.status }}</td>
+        <td>
+          <span *ngIf="!expense.isBeingEdited">
+            {{ expense.paymentSource }}
+          </span>
+        </td>
+
+        <td>
+          <span *ngIf="!expense.isBeingEdited">
+            {{ expense.status }}
+          </span>
+        </td>
 
         <td nzAlign="center">
           <nz-space>
