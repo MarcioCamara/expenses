@@ -113,5 +113,7 @@
       }
     }
   },
-  "defaultProject": "expenses"
+  "cli": {
+    "analytics": "ca529435-fc4c-45be-b699-dcde7c6d9171"
+  }
 }

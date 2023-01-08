@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 
 interface Expense {
   month: Date,
@@ -17,13 +17,13 @@ interface Expense {
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
-  expensesForm!: FormGroup;
+  expensesForm!: UntypedFormGroup;
 
   allChecked: boolean = false;
 
   expenses: Expense[] = [];
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: UntypedFormBuilder) { }
 
   ngOnInit(): void {
     this.expensesForm = this.formBuilder.group({
