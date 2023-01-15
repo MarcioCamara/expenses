@@ -1,0 +1,156 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>Finanças</nz-breadcrumb-item>
+  <nz-breadcrumb-item>Registrar</nz-breadcrumb-item>
+  <nz-breadcrumb-item>Itens</nz-breadcrumb-item>
+  <nz-breadcrumb-item>Rendas</nz-breadcrumb-item>
+</nz-breadcrumb>
+
+<form nz-form [formGroup]="revenuesForm" class="revenues-form">
+  <div nz-row [nzGutter]="16">
+    <div nz-col [nzSpan]="6">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Por favor selecione o mês da renda!">
+          <nz-date-picker nzMode="month" formControlName="month" nzFormat="MMMM"
+            (ngModelChange)="onMonthChange()"></nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+
+  <nz-divider></nz-divider>
+
+  <div nz-row [nzGutter]="16">
+    <div nz-col [nzSpan]="16">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Por favor selecione a fonte de pagamento da despesa!">
+          <nz-select formControlName="name" nzAllowClear nzPlaceHolder="Selecione uma fonte"
+            [nzNotFoundContent]="noRevenueFound">
+            <nz-option *ngFor="let revenue of revenuesParameter" [nzLabel]="revenue.name"
+              [nzValue]="revenue.name"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <ng-template #noRevenueFound>
+        <div class="d-flex flex-column align-items-center">
+          <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="contentNoRevenue"
+            [nzNotFoundFooter]="footerNoRevenue">
+            <ng-template #contentNoRevenue>
+              <span>
+                Não há dados
+              </span>
+            </ng-template>
+
+            <ng-template #footerNoRevenue>
+              <button nz-button nzType="link" routerLink="/register/parameters/revenue">Registrar Renda</button>
+            </ng-template>
+          </nz-empty>
+        </div>
+      </ng-template>
+    </div>
+
+    <div nz-col [nzSpan]="6">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Por favor insira o valor da renda!">
+          <input nz-input formControlName="value" placeholder="R$ 0,00" mask="separator.2" thousandSeparator="."
+            decimalMarker="," type="text" [dropSpecialCharacters]="true" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzSpan]="2">
+      <button nz-button nzType="primary" (click)="addRevenue()">Incluir</button>
+    </div>
+  </div>
+</form>
+
+<button *ngIf="!revenueBeingEdited && isSomeRevenueChecked && revenues.length > 0" nz-button nzType="primary"
+  class="mb-3" nz-popconfirm nzPopconfirmTitle="Deseja realmente apagar todos os itens?" [nzIcon]="iconDanger"
+  nzOkText="Sim" nzCancelText="Não" (nzOnConfirm)="removeSelectedRevenues()">
+  Excluir Selecionados
+</button>
+
+<nz-table #dynamicTable [nzData]="revenues" nzTableLayout="auto" nzBordered="true" nzSimple="true" nzSize="small">
+  <thead>
+    <tr>
+      <th nzWidth="60px" [(nzChecked)]="isAllChecked" (nzCheckedChange)="checkAll($event)"
+        [nzDisabled]="revenues.length === 0 || !!revenueBeingEdited">
+      </th>
+
+      <th>Mês</th>
+
+      <th>Nome</th>
+
+      <th>Valor</th>
+
+      <th nzWidth="60px"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <ng-container *ngFor="let revenue of dynamicTable.data">
+      <tr>
+        <td nzWidth="60px" [(nzChecked)]="revenue.checked" [nzDisabled]="!!revenueBeingEdited"
+          (nzCheckedChange)="checkIfIsSomeRevenueChecked()"></td>
+
+        <td>
+          <span *ngIf="revenueBeingEdited !== revenue">
+            {{ (revenue.month | date: 'MMMM/yyyy':'':'pt') | titlecase }}
+          </span>
+
+          <nz-date-picker *ngIf="revenueBeingEdited === revenue" nzMode="month" nzFormat="MMMM"
+            [(ngModel)]="revenue.month"></nz-date-picker>
+        </td>
+
+        <td>
+          <span *ngIf="revenueBeingEdited !== revenue">
+            {{ revenue.name }}
+          </span>
+
+          <nz-select *ngIf="revenueBeingEdited === revenue" [(ngModel)]="revenue.name" nzAllowClear
+            nzPlaceHolder="Selecione uma fonte" [nzNotFoundContent]="noRevenueFound">
+            <nz-option *ngFor="let revenue of revenuesParameter" [nzLabel]="revenue.name"
+              [nzValue]="revenue.name"></nz-option>
+          </nz-select>
+        </td>
+
+        <td>
+          <span *ngIf="revenueBeingEdited !== revenue">
+            {{ revenue.value | currency:'BRL' }}
+          </span>
+
+          <input *ngIf="revenueBeingEdited === revenue" nz-input [(ngModel)]="revenue.value" placeholder="R$ 0,00"
+            mask="separator.2" thousandSeparator="." decimalMarker="," type="text" [dropSpecialCharacters]="true" />
+        </td>
+
+        <td nzWidth="60px" nzAlign="center">
+          <nz-space>
+            <ng-container *ngIf="revenueBeingEdited !== revenue">
+              <a *nzSpaceItem nz-popconfirm
+                [nzPopconfirmTitle]="'Deseja realmente apagar o item \'' + revenue.name + '\'?'" [nzIcon]="iconDanger"
+                nzOkText="Sim" nzCancelText="Não" (nzOnConfirm)="removeRevenue(revenue)">
+                <span nz-icon nzType="delete" nzTheme="outline"></span>
+              </a>
+            </ng-container>
+
+            <ng-container *ngIf="revenueBeingEdited !== revenue">
+              <button *nzSpaceItem (click)="setRevenueBeingEdited(revenue)" nz-button nzType="link">
+                <span nz-icon nzType="edit" nzTheme="outline"></span>
+              </button>
+            </ng-container>
+
+            <ng-container *ngIf="revenueBeingEdited === revenue">
+              <button *nzSpaceItem (click)="updateEditedRevenue(revenue)" nz-button nzType="link">
+                <span nz-icon nzType="save" nzTheme="outline"></span>
+              </button>
+            </ng-container>
+          </nz-space>
+        </td>
+      </tr>
+    </ng-container>
+  </tbody>
+</nz-table>
+
+<ng-template #iconDanger>
+  <span nz-icon nzType="exclamation-circle" style="color: red;"></span>
+</ng-template>

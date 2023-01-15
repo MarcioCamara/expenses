@@ -1,0 +1,82 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>Finanças</nz-breadcrumb-item>
+  <nz-breadcrumb-item>Registrar</nz-breadcrumb-item>
+  <nz-breadcrumb-item>Parâmetros</nz-breadcrumb-item>
+  <nz-breadcrumb-item>Rendas</nz-breadcrumb-item>
+</nz-breadcrumb>
+
+<form nz-form [formGroup]="revenuesForm" class="revenues-form">
+  <div nz-row [nzGutter]="16">
+    <div nz-col [nzSpan]="22">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Por favor insira o nome da renda!">
+          <input type="text" nz-input formControlName="name" placeholder="Nome" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzSpan]="2">
+      <button nz-button nzType="primary" (click)="addRevenue()">Incluir</button>
+    </div>
+  </div>
+</form>
+
+<nz-table #dynamicTable [nzData]="revenues" nzTableLayout="auto" nzBordered="true" nzSimple="true" nzSize="small">
+  <thead>
+    <tr>
+      <th nzWidth="60px" [(nzChecked)]="isAllChecked" (nzCheckedChange)="checkAll($event)"
+        [nzDisabled]="revenues.length === 0 || !!revenueBeingEdited">
+      </th>
+
+      <th>Nome</th>
+
+      <th nzWidth="60px"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <ng-container *ngFor="let revenue of dynamicTable.data">
+      <tr>
+        <td nzWidth="60px" [(nzChecked)]="revenue.checked" [nzDisabled]="!!revenueBeingEdited"
+          (nzCheckedChange)="checkIfIsSomeRevenueChecked()"></td>
+
+        <td nzEllipsis="true">
+          <span *ngIf="revenueBeingEdited !== revenue">
+            {{ revenue.name }}
+          </span>
+
+          <input *ngIf="revenueBeingEdited === revenue" type="text" nz-input [(ngModel)]="revenue.name"
+            placeholder="Nome" />
+        </td>
+
+        <td nzAlign="center" nzWidth="60px">
+          <nz-space>
+            <ng-container *ngIf="revenueBeingEdited !== revenue">
+              <a *nzSpaceItem nz-popconfirm
+                [nzPopconfirmTitle]="'Deseja realmente apagar o item \'' + revenue.name + '\'?'" [nzIcon]="iconDanger"
+                nzOkText="Sim" nzCancelText="Não" (nzOnConfirm)="removeRevenue(revenue)">
+                <span nz-icon nzType="delete" nzTheme="outline"></span>
+              </a>
+            </ng-container>
+
+            <ng-container *ngIf="revenueBeingEdited !== revenue">
+              <button *nzSpaceItem (click)="setRevenueBeingEdited(revenue)" nz-button nzType="link">
+                <span nz-icon nzType="edit" nzTheme="outline"></span>
+              </button>
+            </ng-container>
+
+            <ng-container *ngIf="revenueBeingEdited === revenue">
+              <button *nzSpaceItem (click)="updateEditedRevenue(revenue)" nz-button nzType="link">
+                <span nz-icon nzType="save" nzTheme="outline"></span>
+              </button>
+            </ng-container>
+          </nz-space>
+        </td>
+      </tr>
+    </ng-container>
+  </tbody>
+</nz-table>
+
+<ng-template #iconDanger>
+  <span nz-icon nzType="exclamation-circle" style="color: red;"></span>
+</ng-template>

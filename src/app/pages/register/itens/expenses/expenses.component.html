@@ -1,0 +1,215 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>Finanças</nz-breadcrumb-item>
+  <nz-breadcrumb-item>Registrar</nz-breadcrumb-item>
+  <nz-breadcrumb-item>Itens</nz-breadcrumb-item>
+  <nz-breadcrumb-item>Despesas</nz-breadcrumb-item>
+</nz-breadcrumb>
+
+<form nz-form [formGroup]="expensesForm" class="expenses-form">
+  <div nz-row [nzGutter]="16">
+    <div nz-col [nzSpan]="6">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Por favor selecione o mês da despesa!">
+          <nz-date-picker nzMode="month" formControlName="month" nzFormat="MMMM"
+            (ngModelChange)="onMonthChange()"></nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+
+  <nz-divider></nz-divider>
+
+  <div nz-row [nzGutter]="16">
+    <div nz-col [nzSpan]="9">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Por favor insira o nome da despesa!">
+          <input type="text" nz-input formControlName="name" placeholder="Nome" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzSpan]="3">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Por favor insira o valor da despesa!">
+          <input nz-input formControlName="value" placeholder="R$ 0,00" mask="separator.2" thousandSeparator="."
+            decimalMarker="," type="text" [dropSpecialCharacters]="true" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzSpan]="5">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Por favor selecione a fonte de pagamento da despesa!">
+          <nz-select formControlName="paymentSource" nzAllowClear nzPlaceHolder="Selecione uma fonte"
+            [nzNotFoundContent]="noRevenueFound">
+            <nz-option *ngFor="let revenue of revenuesParameter" [nzLabel]="revenue.name"
+              [nzValue]="revenue.name"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <ng-template #noRevenueFound>
+        <div class="d-flex flex-column align-items-center">
+          <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="contentNoRevenue"
+            [nzNotFoundFooter]="footerNoRevenue">
+            <ng-template #contentNoRevenue>
+              <span>
+                Não há dados
+              </span>
+            </ng-template>
+
+            <ng-template #footerNoRevenue>
+              <button nz-button nzType="link" routerLink="/register/parameters/revenue">Registrar Renda</button>
+            </ng-template>
+          </nz-empty>
+        </div>
+      </ng-template>
+    </div>
+
+    <div nz-col [nzSpan]="5">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Por favor selecione o status de pagamento da despesa!">
+          <nz-select formControlName="status" nzAllowClear nzPlaceHolder="Selecione um status"
+            [nzNotFoundContent]="noStatusFound">
+            <nz-option *ngFor="let status of statuses" [nzLabel]="status.name" [nzValue]="status.name"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <ng-template #noStatusFound>
+        <div class="d-flex flex-column align-items-center">
+          <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="contentNoStatus" [nzNotFoundFooter]="footerNoStatus">
+            <ng-template #contentNoStatus>
+              <span>
+                Não há dados
+              </span>
+            </ng-template>
+
+            <ng-template #footerNoStatus>
+              <button nz-button nzType="link" routerLink="/register/parameters/statuses">Registrar Status</button>
+            </ng-template>
+          </nz-empty>
+        </div>
+      </ng-template>
+    </div>
+
+    <div nz-col [nzSpan]="2">
+      <button nz-button nzType="primary" (click)="addExpense()">Incluir</button>
+    </div>
+  </div>
+</form>
+
+<button *ngIf="!expenseBeingEdited && isSomeExpenseChecked && expenses.length > 0" nz-button nzType="primary"
+  class="mb-3" nz-popconfirm nzPopconfirmTitle="Deseja realmente apagar todos os itens?" [nzIcon]="iconDanger"
+  nzOkText="Sim" nzCancelText="Não" (nzOnConfirm)="removeSelectedExpenses()">
+  Excluir Selecionados
+</button>
+
+<nz-table #dynamicTable [nzData]="expenses" nzTableLayout="auto" nzBordered="true" nzSimple="true" nzSize="small">
+  <thead>
+    <tr>
+      <th nzWidth="60px" [(nzChecked)]="isAllChecked" (nzCheckedChange)="checkAll($event)"
+        [nzDisabled]="expenses.length === 0 || !!expenseBeingEdited">
+      </th>
+
+      <th>Mês</th>
+
+      <th>Nome</th>
+
+      <th>Valor</th>
+
+      <th>Fonte</th>
+
+      <th>Status</th>
+
+      <th nzWidth="60px"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <ng-container *ngFor="let expense of dynamicTable.data">
+      <tr>
+        <td nzWidth="60px" [(nzChecked)]="expense.checked" [nzDisabled]="!!expenseBeingEdited"
+          (nzCheckedChange)="checkIfIsSomeExpenseChecked()"></td>
+
+        <td>
+          <span *ngIf="expenseBeingEdited !== expense">
+            {{ (expense.month | date: 'MMMM/yyyy':'':'pt') | titlecase }}
+          </span>
+
+          <nz-date-picker *ngIf="expenseBeingEdited === expense" nzMode="month" nzFormat="MMMM"
+            [(ngModel)]="expense.month"></nz-date-picker>
+        </td>
+
+        <td nzEllipsis="true">
+          <span *ngIf="expenseBeingEdited !== expense">
+            {{ expense.name }}
+          </span>
+
+          <input *ngIf="expenseBeingEdited === expense" type="text" nz-input [(ngModel)]="expense.name"
+            placeholder="Nome" />
+        </td>
+
+        <td>
+          <span *ngIf="expenseBeingEdited !== expense">
+            {{ expense.value | currency:'BRL' }}
+          </span>
+
+          <input *ngIf="expenseBeingEdited === expense" nz-input [(ngModel)]="expense.value" placeholder="R$ 0,00"
+            mask="separator.2" thousandSeparator="." decimalMarker="," type="text" [dropSpecialCharacters]="true" />
+        </td>
+
+        <td>
+          <span *ngIf="expenseBeingEdited !== expense">
+            {{ expense.paymentSource }}
+          </span>
+
+          <nz-select *ngIf="expenseBeingEdited === expense" [(ngModel)]="expense.paymentSource" nzAllowClear
+            nzPlaceHolder="Selecione uma fonte" [nzNotFoundContent]="noRevenueFound">
+            <nz-option *ngFor="let revenue of revenuesParameter" [nzLabel]="revenue.name"
+              [nzValue]="revenue.name"></nz-option>
+          </nz-select>
+        </td>
+
+        <td>
+          <span *ngIf="expenseBeingEdited !== expense">
+            {{ expense.status }}
+          </span>
+
+          <nz-select *ngIf="expenseBeingEdited === expense" [(ngModel)]="expense.status" nzAllowClear
+            nzPlaceHolder="Selecione um status" [nzNotFoundContent]="noStatusFound">
+            <nz-option *ngFor="let status of statuses" [nzLabel]="status.name" [nzValue]="status.name"></nz-option>
+          </nz-select>
+        </td>
+
+        <td nzWidth="60px" nzAlign="center">
+          <nz-space>
+            <ng-container *ngIf="expenseBeingEdited !== expense">
+              <a *nzSpaceItem nz-popconfirm
+                [nzPopconfirmTitle]="'Deseja realmente apagar o item \'' + expense.name + '\'?'" [nzIcon]="iconDanger"
+                nzOkText="Sim" nzCancelText="Não" (nzOnConfirm)="removeExpense(expense)">
+                <span nz-icon nzType="delete" nzTheme="outline"></span>
+              </a>
+            </ng-container>
+
+            <ng-container *ngIf="expenseBeingEdited !== expense">
+              <button *nzSpaceItem (click)="setExpenseBeingEdited(expense)" nz-button nzType="link">
+                <span nz-icon nzType="edit" nzTheme="outline"></span>
+              </button>
+            </ng-container>
+
+            <ng-container *ngIf="expenseBeingEdited === expense">
+              <button *nzSpaceItem (click)="updateEditedExpense(expense)" nz-button nzType="link">
+                <span nz-icon nzType="save" nzTheme="outline"></span>
+              </button>
+            </ng-container>
+          </nz-space>
+        </td>
+      </tr>
+    </ng-container>
+  </tbody>
+</nz-table>
+
+<ng-template #iconDanger>
+  <span nz-icon nzType="exclamation-circle" style="color: red;"></span>
+</ng-template>

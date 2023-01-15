@@ -1,12 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
-import { RegisterComponent } from './pages/register/register.component';
+import { ExpensesComponent } from './pages/register/itens/expenses/expenses.component';
+import { RevenuesComponent } from './pages/register/itens/revenues/revenues.component';
+import { RevenuesComponent as ParameterRevenuesComponent } from './pages/register/parameters/revenues/revenues.component';
+import { StatusesComponent } from './pages/register/parameters/statuses/statuses.component';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: '/home',
     pathMatch: 'full',
   },
   {
@@ -14,8 +17,24 @@ const routes: Routes = [
     component: HomeComponent,
   },
   {
-    path: 'register',
-    component: RegisterComponent,
+    path: 'register/itens/expenses',
+    component: ExpensesComponent,
+  },
+  {
+    path: 'register/itens/revenues',
+    component: RevenuesComponent,
+  },
+  {
+    path: 'register/parameters/statuses',
+    component: StatusesComponent,
+  },
+  {
+    path: 'register/parameters/revenues',
+    component: ParameterRevenuesComponent,
+  },
+  {
+    path: '**',
+    redirectTo: '/home',
   },
 ];
 

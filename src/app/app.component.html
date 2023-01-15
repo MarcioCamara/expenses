@@ -7,16 +7,22 @@
         Home
       </li>
 
-      <li nz-menu-item routerLink="register">
-        <span nz-icon nzType="edit"></span>
+      <li nz-submenu nzTitle="Registrar" nzIcon="edit">
+        <ul>
+          <li nz-menu-group nzTitle="Itens">
+            <ul>
+              <li nz-menu-item routerLink="register/itens/expenses">Despesas</li>
+              <li nz-menu-item routerLink="register/itens/revenues">Rendas</li>
+            </ul>
+          </li>
 
-        Registrar
-      </li>
-
-      <li nz-menu-item routerLink="view">
-        <span nz-icon nzType="eye"></span>
-
-        Visualizar
+          <li nz-menu-group nzTitle="Parâmetros">
+            <ul>
+              <li nz-menu-item routerLink="register/parameters/statuses">Status</li>
+              <li nz-menu-item routerLink="register/parameters/revenues">Rendas</li>
+            </ul>
+          </li>
+        </ul>
       </li>
     </ul>
   </nz-header>
